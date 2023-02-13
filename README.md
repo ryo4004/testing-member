@@ -1,46 +1,71 @@
-# Getting Started with Create React App
+# 会員専用アプリ
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+新潟県長岡市で活動している吹奏楽団体である[ザ・ウィンド・アンサンブル](https://winds-n.com)の会員のためのアプリです。  
+ザ・ウィンド・アンサンブル向けに最適化されています。
 
-## Available Scripts
+<img src="https://user-images.githubusercontent.com/25874594/66272455-d4900680-e8a4-11e9-9d0e-e134f46e7104.png" width="320px" />
 
-In the project directory, you can run:
+# ディレクトリ構成
 
-### `npm start`
+- `/client/build` 公開されるデータ
+- `/client/src` クライアントアプリのソースコード
+- `/server` Webサーバで使用するライブラリ
+- `/app.js` Webサーバ
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+# 使い方
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 準備
 
-### `npm test`
+npmがインストールされている環境でClone後、以下を実行してください。
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+# cd member
+# npm i
+```
 
-### `npm run build`
+## アプリのビルドと実行
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+クライアントアプリをビルドし、Webサーバを起動してください。
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 開発コマンド
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+# npm run build-dev
+```
 
-### `npm run eject`
+### 本番ビルド
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+# npm run build-prod
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Webサーバ
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+node app.js
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Expressサーバが起動します。  
+使用ポートは3006番です。(127.0.0.1:3006)
 
-## Learn More
+外部からアクセスする場合はApacheなどでプロキシを通してください。
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# 使用するAPI
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+以下のAPIを使用します。
+
+### ユーザ認証
+
+`auth.winds-n.com`を参照
+
+### 演奏会データ
+
+`app.winds-n.com`を参照
+
+### 各種API
+
+`api.winds-n.com`を参照
+
+### ウィンズスコア
+
+`score.winds-n.com`を参照
