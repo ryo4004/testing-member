@@ -22,12 +22,14 @@ const getClientId = () => {
   return newClientId
 }
 
+const USER_ID_KEY = 'windsid'
+
 const setUserId = (userId: string) => {
-  localStorage.setItem('userid', userId)
+  localStorage.setItem(USER_ID_KEY, userId)
 }
 
 const getUserId = () => {
-  return localStorage.getItem('userid')
+  return localStorage.getItem(USER_ID_KEY)
 }
 
 const clearAllContents = () => {

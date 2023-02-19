@@ -27,6 +27,8 @@ export const ScoreList = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const scoreListQuery = useScoreList(searchQuery)
 
+  const scoreList = scoreListQuery.data?.list.filter((s) => s.scoreStatus !== '-1') || null
+
   return (
     <>
       <ContentsBox>
@@ -38,7 +40,7 @@ export const ScoreList = () => {
               setSearchQuery(searchQuery)
             }}
           />
-          <ScoreCount isSearch={!!searchQuery} scoreList={scoreListQuery.data?.list || null} />
+          <ScoreCount isSearch={!!searchQuery} scoreList={scoreList} />
           <ScoreListComponent
             searchQuery={searchQuery}
             scoreListQuery={scoreListQuery}
@@ -83,9 +85,11 @@ const ScoreListComponent = ({
     return null
   }
 
+  const scoreList = scoreListQuery.data.list.filter((s) => s.scoreStatus !== '-1') || null
+
   return (
     <>
-      {scoreListQuery.data.list.map((scoreItem, index) => {
+      {scoreList.map((scoreItem, index) => {
         if (!loadMore && index > LOAD_MORE) {
           return null
         }

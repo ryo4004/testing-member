@@ -168,13 +168,24 @@
       }
     }
 
-    .icon {
-      display: flex;
-      align-items: center;
+    svg {
       width: 14px;
       height: 14px;
       padding: 0 0.6em;
       font-size: 10px;
+
+      & {
+        svg {
+          fill: #888;
+        }
+      }
+      @media (prefers-color-scheme: dark) {
+        & {
+          svg {
+            fill: #777;
+          }
+        }
+      }
     }
 
     span {

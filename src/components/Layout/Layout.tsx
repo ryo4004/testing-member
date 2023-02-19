@@ -67,11 +67,7 @@ const ContentsLayout = ({ breadList, title, subTitle, children }: LayoutProps) =
               <Fragment key={index}>
                 {breadItem.isLoading && <>読み込み中</>}
                 {!breadItem.isLoading && <Link to={breadItem.path}>{breadItem.label}</Link>}
-                {array.length - 1 !== index && (
-                  <div className={styles.icon}>
-                    <RightIcon />
-                  </div>
-                )}
+                {array.length - 1 !== index && <RightIcon />}
               </Fragment>
             )
           })}

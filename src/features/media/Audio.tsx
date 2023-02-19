@@ -13,19 +13,19 @@ import { ReactComponent as MusicalNoteIcon } from '../../assets/musical-note.svg
 import { ReactComponent as ListIcon } from '../../assets/list.svg'
 import { ReactComponent as PlayCircleOutlineIcon } from '../../assets/play-circle-outline.svg'
 import { useMediaStore } from '../../stores/media'
-import { AudioSource, useReferenceList } from './api/getReferenceList'
-import { useSourceList } from '../practice/api/getSourceList'
+import { AudioSource, ReferenceListApi, useReferenceList } from './api/getReferenceList'
+import { SourceListApi, useSourceList } from '../practice/api/getSourceList'
 import type { ConcertDetail } from '../../types'
 import type { PlayType } from '../../stores/media'
 import styles from './Audio.module.scss'
 import { formatPlayTime } from '../../utilities/format'
-import { useAudioList } from './api/getAudioList'
-import { useConcertList } from '../archive/api/getConcertList'
+import { AudioListApi, useAudioList } from './api/getAudioList'
+import { ConcertListApi, useConcertList } from '../archive/api/getConcertList'
 import { getConcertDetail, getAudioSource, composeSrc, getTimeSecond } from './utilities'
 import { composePlaylist } from './utilities'
 import { useEffect } from 'react'
-import { AudioRecord, useRecordList } from './api/getRecordList'
-import { HistoryDetail, useHistoryList } from '../practice/api/getHistoryList'
+import { AudioRecord, RecordListApi, useRecordList } from './api/getRecordList'
+import { HistoryDetail, HistoryListApi, useHistoryList } from '../practice/api/getHistoryList'
 
 type AudioState = {
   loading: boolean
@@ -41,7 +41,7 @@ const initialState = {
   duration: null,
 }
 
-const useAudio = (audioRef: RefObject<HTMLAudioElement>) => {
+const useAudio = (audioRef: RefObject<HTMLAudioElement>, audioSource: AudioSource | AudioRecord | null) => {
   const [state, setState] = useState<AudioState>(initialState)
   const {
     audioRef: storedAudioRef,
@@ -49,7 +49,10 @@ const useAudio = (audioRef: RefObject<HTMLAudioElement>) => {
     toggleDisplayPlayer,
     toggleDisplayPlaylist,
     playing,
+    playTrack,
+    playType,
     setPlaying,
+    setTrack,
     resetTrack,
   } = useMediaStore()
 
@@ -162,7 +165,21 @@ const useAudio = (audioRef: RefObject<HTMLAudioElement>) => {
   }
 
   const onEnded = () => {
-    // playNext()
+    if (playTrack !== null && audioSource !== null) {
+      if (playType !== 'practice' && 'baseSrc' in audioSource) {
+        if (audioSource.list.length > playTrack + 1) {
+          return setTrack(playTrack + 1)
+        } else {
+          return onPause()
+        }
+      } else if (playType === 'practice' && 'detail' in audioSource) {
+        if (audioSource.detail.file.length > playTrack + 1) {
+          return setTrack(playTrack + 1)
+        } else {
+          return onPause()
+        }
+      }
+    }
   }
 
   return {
@@ -223,14 +240,6 @@ const useAudioApiQuery = () => {
 }
 
 export const Audio = () => {
-  const pc = useStyle()
-  const { playing, playType, playId, playTrack, displayPlayer, displayPlaylist, toggleDisplayPlaylist } =
-    useMediaStore()
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const audioProgress = useRef<HTMLDivElement>(null)
-  const audioLoadProgress = useRef<HTMLDivElement>(null)
-  const { state, playPercent, playCurrentTime, onPlay, onPause, onStop, audioBackward, audioForward, audioFunctions } =
-    useAudio(audioRef)
   const apiQueries = useAudioApiQuery()
 
   if (apiQueries.isLoading) {
@@ -249,8 +258,45 @@ export const Audio = () => {
     return null
   }
 
+  return (
+    <AudioComponent
+      referenceData={referenceData}
+      sourceData={sourceData}
+      audioData={audioData}
+      concertData={concertData}
+      recordData={recordData}
+      historyData={historyData}
+    />
+  )
+}
+
+const AudioComponent = ({
+  referenceData,
+  sourceData,
+  audioData,
+  concertData,
+  recordData,
+  historyData,
+}: {
+  referenceData: ReferenceListApi
+  sourceData: SourceListApi
+  audioData: AudioListApi
+  concertData: ConcertListApi
+  recordData: RecordListApi
+  historyData: HistoryListApi
+}) => {
+  const pc = useStyle()
+  const { playing, playType, playId, playTrack, displayPlayer, displayPlaylist, toggleDisplayPlaylist } =
+    useMediaStore()
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const audioProgress = useRef<HTMLDivElement>(null)
+  const audioLoadProgress = useRef<HTMLDivElement>(null)
+
   const concertDetail = getConcertDetail(playType, concertData, sourceData, historyData, playId)
   const audioSource = getAudioSource(playType, audioData, referenceData, recordData, playId)
+
+  const { state, playPercent, playCurrentTime, onPlay, onPause, onStop, audioBackward, audioForward, audioFunctions } =
+    useAudio(audioRef, audioSource)
 
   const src = composeSrc(playType, playTrack, audioSource, audioData, referenceData, recordData)
 
