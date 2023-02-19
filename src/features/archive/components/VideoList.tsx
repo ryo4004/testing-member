@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { ContentsBox, ContentsLoading } from '../../../components/ContentsBox'
 import { useVideo } from '../api/getVideo'
 import styles from './VideoList.module.scss'
-import { useConcertList } from '../api/getConcertList'
+import { ConcertItem, useConcertList } from '../api/getConcertList'
 import type { ConcertDetail } from '../../../types'
 import type { Video } from '../../../types/video'
 import { ReactComponent as VideoIcon } from '../../../assets/video.svg'
@@ -19,7 +19,7 @@ const initialState = {
   loading: false,
 }
 
-const useVideoElement = (videoRef: RefObject<HTMLVideoElement>) => {
+const useVideoElement = (videoRef: RefObject<HTMLVideoElement>, videoData: Video) => {
   const [state, setState] = useState<VideoState>(initialState)
   const {
     videoRef: storedVideoRef,
@@ -27,6 +27,7 @@ const useVideoElement = (videoRef: RefObject<HTMLVideoElement>) => {
     videoPlayTrack,
     videoCurrentTime,
     setVideoRef,
+    setVideoTrack,
     setVideoPlaying,
     setVideoLoadingPercent,
     updateVideoPlaying,
@@ -113,7 +114,13 @@ const useVideoElement = (videoRef: RefObject<HTMLVideoElement>) => {
   }
 
   const onEnded = () => {
-    // playNext()
+    if (videoPlayTrack !== null) {
+      if (videoData.list.length > videoPlayTrack + 1) {
+        return setVideoTrack(videoPlayTrack + 1)
+      } else {
+        return onPause()
+      }
+    }
   }
 
   const onClick = (e: React.MouseEvent<HTMLVideoElement, MouseEvent>) => {
@@ -143,8 +150,6 @@ const useVideoElement = (videoRef: RefObject<HTMLVideoElement>) => {
 
 export const VideoList = () => {
   const { concertId } = useParams()
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const { videoPlayTrack, videoFunctions } = useVideoElement(videoRef)
   const videoQuery = useVideo(concertId || '')
   const concertListQuery = useConcertList()
 
@@ -161,6 +166,13 @@ export const VideoList = () => {
   }
 
   const { data: videoData } = videoQuery
+
+  return <VideoComponent videoData={videoData} concertItem={concertItem} />
+}
+
+const VideoComponent = ({ videoData, concertItem }: { videoData: Video; concertItem: ConcertItem }) => {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const { videoPlayTrack, videoFunctions } = useVideoElement(videoRef, videoData)
 
   const src = composeSrc(videoData.url, videoData.baseSrc, videoData.list, videoPlayTrack)
 

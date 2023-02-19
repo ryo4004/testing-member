@@ -114,8 +114,8 @@ export const useMediaStore = create<MediaStore>((set) => ({
         displayVideoPlayer: true,
         videoPlaying: true,
         videoPlayTrack,
-        videoPlayId,
-        videoPlayType,
+        videoPlayId: videoPlayId !== undefined ? videoPlayId : state.videoPlayId,
+        videoPlayType: videoPlayType !== undefined ? videoPlayType : state.videoPlayType,
       }
     })
   },
