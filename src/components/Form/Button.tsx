@@ -8,7 +8,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const { children, ...rest } = props
     return (
       <button type={type} className={styles.button} {...rest}>
-        {isLoading ? 'loading' : children}
+        {isLoading ? '読み込み中' : children}
       </button>
     )
   }

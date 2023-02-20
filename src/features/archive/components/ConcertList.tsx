@@ -13,12 +13,42 @@ import styles from './ConcertList.module.scss'
 import { useState } from 'react'
 import { escapeReg } from '../../../utilities/escape'
 import { useMediaStore } from '../../../stores/media'
+import { archiveStorage } from '../../../utilities/archiveStorage'
+
+const useConcertListDisplay = () => {
+  const [displayMain, setDisplayMain] = useState(archiveStorage.getMainState())
+  const [displayMini, setDisplayMini] = useState(archiveStorage.getMiniState())
+  const [displayOther, setDisplayOther] = useState(archiveStorage.getOtherState())
+
+  const updateDisplayMain = () => {
+    archiveStorage.setMainState(!displayMain)
+    setDisplayMain(!displayMain)
+  }
+
+  const updateDisplayMini = () => {
+    archiveStorage.setMiniState(!displayMini)
+    setDisplayMini(!displayMini)
+  }
+
+  const updateDisplayOther = () => {
+    archiveStorage.setOtherState(!displayOther)
+    setDisplayOther(!displayOther)
+  }
+
+  return {
+    displayMain,
+    displayMini,
+    displayOther,
+    updateDisplayMain,
+    updateDisplayMini,
+    updateDisplayOther,
+  }
+}
 
 export const ConcertList = () => {
   const [searchQuery, setSearchQuery] = useState<string>('')
-  const [displayMain, setDisplayMain] = useState(true)
-  const [displayMini, setDisplayMini] = useState(true)
-  const [displayOther, setDisplayOther] = useState(true)
+  const { displayMain, displayMini, displayOther, updateDisplayMain, updateDisplayMini, updateDisplayOther } =
+    useConcertListDisplay()
 
   const concertListQuery = useConcertList()
   if (concertListQuery.isLoading) {
@@ -37,11 +67,11 @@ export const ConcertList = () => {
         <ConcertSwitch
           searchQuery={searchQuery}
           displayMain={displayMain}
-          setDisplayMain={setDisplayMain}
+          setDisplayMain={updateDisplayMain}
           displayMini={displayMini}
-          setDisplayMini={setDisplayMini}
+          setDisplayMini={updateDisplayMini}
           displayOther={displayOther}
-          setDisplayOther={setDisplayOther}
+          setDisplayOther={updateDisplayOther}
         />
         {!searchQuery &&
           concertList.map((concertItem) => {
